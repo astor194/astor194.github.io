@@ -53,13 +53,14 @@ body {
     padding: 1rem 0;
 }
 
-.logo h1 {
+.logo-link {
     font-size: 1.5rem;
     font-weight: 700;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    text-decoration: none;
 }
 
 .nav-menu {
