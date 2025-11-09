@@ -102,7 +102,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
         const DOC_MAP = {
             "verl-ppo-startup": {
@@ -134,28 +133,35 @@
         }
 
         function renderMermaid(container) {
-            if (!window.mermaid) return;
-
             const codeBlocks = container.querySelectorAll('pre code.language-mermaid');
             if (!codeBlocks.length) return;
 
             codeBlocks.forEach(code => {
                 const pre = code.parentElement;
+                const diagram = code.textContent.trim();
                 const wrapper = document.createElement('div');
-                wrapper.className = 'mermaid';
-                wrapper.textContent = code.textContent;
+                wrapper.className = 'mermaid-embed';
+
+                try {
+                    const encoded = btoa(unescape(encodeURIComponent(diagram)))
+                        .replace(/\+/g, '-')
+                        .replace(/\//g, '_');
+
+                    const img = document.createElement('img');
+                    img.src = `https://mermaid.ink/svg/${encoded}`;
+                    img.alt = 'Mermaid Diagram';
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
+                    wrapper.appendChild(img);
+                } catch (error) {
+                    console.warn('Mermaid 图生成失败，回退为代码块：', error);
+                    const fallback = document.createElement('pre');
+                    fallback.textContent = diagram;
+                    wrapper.appendChild(fallback);
+                }
+
                 pre.replaceWith(wrapper);
             });
-
-            try {
-                if (typeof mermaid.run === 'function') {
-                    mermaid.run({ nodes: [container] });
-                } else if (typeof mermaid.init === 'function') {
-                    mermaid.init(undefined, container.querySelectorAll('.mermaid'));
-                }
-            } catch (error) {
-                console.warn('Mermaid 渲染失败：', error);
-            }
         }
 
         async function loadDocument(meta) {
@@ -186,10 +192,6 @@
             const updatedEl = document.getElementById("doc-updated");
             const tagsEl = document.getElementById("doc-tags");
             const downloadEl = document.getElementById("doc-download");
-
-            if (window.mermaid) {
-                mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
-            }
 
             if (!meta) {
                 titleEl.textContent = "未找到对应的文档";

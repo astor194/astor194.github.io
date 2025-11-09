@@ -491,7 +491,7 @@ body {
     border-radius: var(--radius-sm);
 }
 
-.doc-content .mermaid {
+.doc-content .mermaid-embed {
     background-color: var(--bg-color);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
@@ -500,9 +500,12 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-.doc-content .mermaid svg {
+.doc-content .mermaid-embed img,
+.doc-content .mermaid-embed svg {
     max-width: 100%;
     height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
 .doc-content table {
